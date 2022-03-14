@@ -11,6 +11,7 @@ typings/
 build/
 dist/
 lib/
+!runtime/Elixir/antlr4/lib
 user.build.properties
 
 # MacOSX files
