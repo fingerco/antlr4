@@ -1,6 +1,8 @@
 package org.antlr.v4.codegen.target;
 
 import org.antlr.v4.codegen.CodeGenerator;
+import org.antlr.v4.tool.Grammar;
+import org.antlr.v4.parse.ANTLRParser;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.StringRenderer;
 import org.antlr.v4.codegen.Target;
@@ -35,6 +37,25 @@ public class ElixirTarget extends Target {
 		return result;
 	}
 
+	public String getRecognizerFileName(boolean header) {
+		CodeGenerator gen = getCodeGenerator();
+		Grammar g = gen.g;
+		assert g!=null;
+		String name;
+		switch ( g.getType()) {
+			case ANTLRParser.PARSER:
+				name = g.name.endsWith("Parser") ? g.name.substring(0, g.name.length()-6) : g.name;
+				return name.toLowerCase()+"_parser.ex";
+			case ANTLRParser.LEXER:
+				name = g.name.endsWith("Lexer") ? g.name.substring(0, g.name.length()-5) : g.name; // trim off "lexer"
+				return name.toLowerCase()+"_lexer.ex";
+			case ANTLRParser.COMBINED:
+				return g.name.toLowerCase()+"_parser.ex";
+			default :
+				return "INVALID_FILE_NAME";
+		}
+	}
+
 	protected static class JavaStringRenderer extends StringRenderer {
 		@Override
 		public String toString(Object o, String formatString, Locale locale) {
@@ -45,5 +66,15 @@ public class ElixirTarget extends Target {
 
 			return super.toString(o, formatString, locale);
 		}
+	}
+
+	@Override
+	public boolean wantsBaseListener() {
+		return false;
+	}
+
+	@Override
+	public boolean wantsBaseVisitor() {
+		return false;
 	}
 }
